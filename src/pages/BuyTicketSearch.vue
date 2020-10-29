@@ -2,7 +2,7 @@
   <q-page class="flex flex-center">
     <q-card class="my-card">
       <q-card-section v-if="first">
-        <q-form @submit="onSubmit" @reset="onReset" class="">
+        <q-form @submit="onSubmit" @reset="onReset">
           <div class="row" style="padding: 0px">
 
             <q-select filled v-model="station_start" clearable use-input hide-selected fill-input input-debounce="0"
