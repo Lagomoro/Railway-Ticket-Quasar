@@ -188,7 +188,7 @@
         <q-page-container>
           <q-page class="q-pa-none q-py-sm flex flex-center">
 
-            <q-card flat bordered class="my-card q-my-sm" v-for="n in 150" :key="n">
+            <q-card flat bordered class="my-card q-my-sm" v-for="n in 10" :key="n">
               <q-item class="q-pa-md">
                 G40
               </q-item>

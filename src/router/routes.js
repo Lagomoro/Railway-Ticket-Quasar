@@ -21,13 +21,6 @@ const routes = [
     ]
   },
   {
-    path: '/buy-ticket',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/BuyTicket.vue') }
-    ]
-  },
-  {
     path: '/schedule-search',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -35,10 +28,10 @@ const routes = [
     ]
   },
   {
-    path: '/schedule',
+    path: '/passenger',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Schedule.vue') }
+      { path: '', component: () => import('pages/Passenger.vue') }
     ]
   },
   {

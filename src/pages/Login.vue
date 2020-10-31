@@ -29,6 +29,8 @@
 
 <script>
 import axios from "axios";
+axios.defaults.withCredentials = true;
+import Cookie from "js-cookie";
 
 export default {
   name: "Login",
@@ -58,6 +60,7 @@ export default {
       }).then(response => {
         // 请求成功
         let res = response.data;
+        console.log(res)
         let opts = {
           color : 'white',
           textColor : 'red-5',
@@ -66,15 +69,27 @@ export default {
           position : 'top'
         }
         switch (res.status){
-          case 200: opts.message = '登录成功！'; opts.icon = 'cloud_done'; opts.textColor = 'green-4'; break;
+          case 200:
+            opts.message = '登录成功！';
+            opts.icon = 'cloud_done';
+            opts.textColor = 'green-4';
+            Cookie.set('token', res.token, { expires: 7 })
+            break;
           case 500: opts.message = '登陆失败，用户名不存在。'; break;
           case 501: opts.message = '登陆失败，用户名或密码错误。'; break;
-          default: opts.message = '系统错误，请稍后尝试。'; break;
+          default: opts.message = '系统错误，请稍后尝试。';
         }
         this.$q.notify(opts)
       }).catch(error => {
         // 请求失败，
         console.log(error);
+        this.$q.notify({
+          color : 'white',
+          textColor : 'red-5',
+          message : '系统错误，请稍后尝试。',
+          icon: 'warning',
+          position : 'top'
+        });
       });
     },
     onReset () {

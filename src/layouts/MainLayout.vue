@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf" class="bg-grey-1">
     <q-header elevated class="bg-white text-grey-8">
       <q-toolbar>
-        <q-btn flat dense round icon="train" aria-label="Menu" class="q-ma-sm" @click="leftDrawerOpen = !leftDrawerOpen"/>
+        <q-btn flat dense round icon="train" aria-label="Menu" class="q-ma-sm" @click="a='leftDrawerOpen = !leftDrawerOpen'"/>
 
         <q-separator vertical inset />
 
@@ -14,21 +14,14 @@
           <q-route-tab name="home" icon="home" label="首页" to="/login" exact/>
           <q-route-tab name="mails" icon="credit_card" label="购票" to="/buy-ticket-search" exact/>
           <q-route-tab name="alarms" icon="alarm" label="时刻表" to="/schedule-search"/>
-          <q-route-tab name="admin" icon="admin_panel_settings" label="管理员工具" to="/buy-ticket"/>
+          <q-route-tab hidden name="passenger" to="/passenger"/>
+          <q-route-tab name="admin" icon="admin_panel_settings" label="管理员工具" to="/passenger"/>
           <q-route-tab name="develop" icon="code" label="开发者工具" to="/schedule"/>
         </q-tabs>
 
         <q-separator vertical inset/>
 
         <q-btn flat dense round icon="account_circle" aria-label="Menu" class="q-ma-sm" @click="rightDrawerOpen = !rightDrawerOpen"/>
-
-        <!--
-        <q-btn flat dense round aria-label="Menu" class="q-ma-sm" @click="rightDrawerOpen = !rightDrawerOpen">
-          <q-avatar size="28px">
-            <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
-          </q-avatar>
-        </q-btn>
-        -->
 
       </q-toolbar>
     </q-header>
@@ -47,7 +40,18 @@
         <q-item-label header class="text-grey-8">
           用户中心
         </q-item-label>
-        <EssentialLink v-for="link in userLinks" :key="link.title" v-bind="link"/>
+
+        <router-link v-for="link in userLinks" :key="link.title" :to="'/'+link.tab">
+          <q-item clickable tag="a" target="_blank" @click="tab = link.tab;rightDrawerOpen = false;">
+            <q-item-section v-if="link.icon" avatar>
+              <q-icon :name="link.icon" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ link.title }}</q-item-label>
+              <q-item-label caption>{{ link.caption }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </router-link>
       </q-list>
     </q-drawer>
 
@@ -110,25 +114,25 @@ const userLinksData = [
     title: '修改密码',
     caption: 'Change Password',
     icon: 'school',
-    link: '/buy-ticket-search'
+    tab: 'passenger'
   },
   {
     title: '个人信息',
     caption: 'Personal Information',
     icon: 'code',
-    link: 'https://github.com/quasarframework'
+    tab: 'passenger'
   },
   {
     title: '乘客管理',
     caption: 'Passengers',
     icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    tab: 'passenger'
   },
   {
     title: '订单管理',
     caption: 'Orders',
     icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    tab: 'passenger'
   }
 ];
 

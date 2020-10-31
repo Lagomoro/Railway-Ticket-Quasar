@@ -22,7 +22,8 @@ module.exports = function (ctx) {
       'qs.js',
       'axios.js',
       'element-ui.js',
-      'view-ui.js'
+      'view-ui.js',
+      'js-cookie.js'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

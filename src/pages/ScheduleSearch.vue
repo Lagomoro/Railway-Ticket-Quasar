@@ -36,7 +36,7 @@
             </q-input>
 
             <div class="q-mt-md">
-              <q-btn color="primary" type="submit" class="full-width" label="查询时刻表" size="lg" @click="onExchange"/>
+              <q-btn color="primary" type="submit" class="full-width" label="查询时刻表" size="lg"/>
             </div>
 
           </q-form>
@@ -74,7 +74,7 @@
               </div>
             </div>
 
-            <q-btn color="primary" type="submit" class="full-width" label="查询时刻表" size="lg" @click="onExchange"/>
+            <q-btn color="primary" type="submit" class="full-width" label="查询时刻表" size="lg"/>
 
           </q-form>
         </q-tab-panel>
@@ -132,7 +132,7 @@
               </div>
             </div>
 
-            <q-btn color="primary" type="submit" class="full-width" label="查询时刻表" size="lg" @click="onExchange"/>
+            <q-btn color="primary" type="submit" class="full-width" label="查询时刻表" size="lg"/>
 
           </q-form>
         </q-tab-panel>
@@ -297,20 +297,22 @@
         <q-page-container>
           <q-page class="q-pa-none q-py-sm flex flex-center">
 
-            <q-card flat bordered class="train-card q-my-sm" v-for="n in 150" :key="n">
-              <q-item class="q-pa-md">
-                G40
-              </q-item>
+            <q-card flat bordered class="train-card q-my-sm" v-for="t_data in data" :key="t_data">
+              <div class="row q-pa-none">
+                <q-item class="q-pa-md">{{ t_data.tid }}</q-item>
+                <q-item class="q-pa-md">{{ t_data.start }} - {{ t_data.end }}</q-item>
+              </div>
+              <q-separator />
               <q-expansion-item icon="alarm" label="点击展开时刻表">
-                <q-table dense flat hide-bottom :data="data" :columns="columns" row-key="name" :pagination.sync="pagination">
+                <q-table dense flat hide-bottom :data="t_data.schedule" :columns="columns" row-key="name" :pagination.sync="pagination">
                   <template v-slot:top="props">
-                    <div class="col-2 q-table__title">G40</div>
-
+                    <div class="q-table__title row q-pa-none">
+                      <q-item>{{ t_data.tid }}</q-item>
+                      <q-item>{{ t_data.start }} - {{ t_data.end }}</q-item>
+                    </div>
                     <q-space />
-
                     <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'" @click="props.toggleFullscreen" class="q-ml-md"/>
                   </template>
-
                 </q-table>
               </q-expansion-item>
             </q-card>
@@ -319,6 +321,7 @@
           <q-page-scroller position="bottom">
             <q-btn fab icon="keyboard_arrow_up" color="red" />
           </q-page-scroller>
+
         </q-page-container>
 
       </q-layout>
@@ -329,6 +332,7 @@
 
 <script>
 import axios from 'axios'
+axios.defaults.withCredentials = true;
 
 export default {
   name: "ScheduleSearch",
@@ -361,20 +365,67 @@ export default {
         { name: 'time_a', label: '到时', field: 'time_a', align: "center"},
         { name: 'time', label: '历时', field: 'time', align: "center"},
       ],
-      data: [
-        {station: '千岛湖', time_a: "17:37", time_b: "17:37", stop: "始发站", time: "-"},
-        {station: '建德', time_a: "17:48", time_b: "17:50", stop: "2分", time: "11分"},
-        {station: '桐庐', time_a: "18:04", time_b: "18:06", stop: "2分", time: "27分"},
-        {station: '富阳', time_a: "18:20", time_b: "18:22", stop: "2分", time: "43分"},
-        {station: '杭州东', time_a: "18:45", time_b: "19:00", stop: "15分", time: "1时8分"},
-        {station: '南京南', time_a: "20:04", time_b: "20:06", stop: "2分", time: "2时27分"},
-        {station: '北京南', time_a: "23:23", time_b: "23:23", stop: "终点站", time: "5时46分"},
-      ]
+      data: []
     }
   },
   methods: {
     onSubmit () {
-      this.first = false;
+      let url = null, params = null;
+      switch (this.tab){
+        case "train":
+          url = '/schedule/tid'
+          params = { tid: this.train }
+          break;
+        case "station":
+          url = '/schedule/station'
+          params = { station: this.station_start }
+          break;
+        case "station2":
+          url = '/schedule/station2'
+          params = { station1: this.station_start, station2: this.station_end }
+          break;
+        default:
+      }
+      axios({
+        // 默认请求方式为get
+        method: 'get',
+        url: url,
+        // 传递参数
+        params: params,
+        // 设置请求头信息
+        headers: {
+          'content-type': "application/json"
+        },
+        responseType: 'json'
+      }).then(response => {
+        // 请求成功
+        let res = response.data;
+        console.log(res)
+        switch (res.status){
+          case 200:
+            this.data = res.data;
+            this.first = false;
+            break;
+          default:
+            this.$q.notify({
+              color : 'white',
+              textColor : 'red-5',
+              message : '系统错误，请稍后尝试。',
+              icon: 'warning',
+              position : 'top'
+            });
+        }
+      }).catch(error => {
+        // 请求失败，
+        console.log(error);
+        this.$q.notify({
+          color : 'white',
+          textColor : 'red-5',
+          message : '系统错误，请稍后尝试。',
+          icon: 'warning',
+          position : 'top'
+        });
+      });
     },
     onReset () {
       this.station_start = null;
@@ -416,6 +467,7 @@ export default {
       }).then(response => {
         // 请求成功
         let res = response.data;
+        console.log(res)
         switch (res.status){
           case 200:
             update(() => {
@@ -455,9 +507,6 @@ export default {
   height: auto;
   margin-top: -100px;
 }
-</style>
-
-<style scoped>
 .train-card{
   width: 100%;
   max-width: 1024px;
