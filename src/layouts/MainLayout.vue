@@ -15,6 +15,7 @@
           <q-route-tab name="mails" icon="credit_card" label="购票" to="/buy-ticket-search" exact/>
           <q-route-tab name="alarms" icon="alarm" label="时刻表" to="/schedule-search" exact/>
           <q-route-tab hidden name="passenger" to="/passenger"/>
+          <q-route-tab hidden name="order" to="/order"/>
           <q-route-tab hidden name="login" to="/login"/>
           <q-route-tab name="admin" icon="admin_panel_settings" label="管理员工具" to="/administrator" exact/>
           <q-route-tab name="develop" icon="code" label="开发者工具" to="/schedule" exact/>
@@ -133,7 +134,7 @@ const userLinksData = [
     title: '订单管理',
     caption: 'Orders',
     icon: 'record_voice_over',
-    tab: 'passenger'
+    tab: 'order'
   }
 ];
 

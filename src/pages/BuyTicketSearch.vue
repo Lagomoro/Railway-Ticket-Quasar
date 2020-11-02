@@ -129,12 +129,12 @@
               <div class="row q-pa-none">
                 <q-item class="q-pa-md">{{ t_data.tid }}</q-item>
                 <q-item class="q-pa-md">{{ t_data.start }} - {{ t_data.end }}</q-item>
-                <q-item class="q-pa-md">{{ t_data.time_a }}开</q-item>
-                <q-item class="q-pa-md">{{ t_data.time_b }}到</q-item>
-                <q-item class="q-pa-md">历时{{ Math.floor(t_data.time / 60) }}小时{{ t_data.time % 60 }}分钟</q-item>
-                <q-item class="q-pa-md">商务座：5张</q-item>
-                <q-item class="q-pa-md">一等座：15张</q-item>
-                <q-item class="q-pa-md">二等座：候补</q-item>
+                <q-item class="q-pa-md">{{ t_data.s1 }}{{ t_data.time_a }}开</q-item>
+                <q-item class="q-pa-md">{{ t_data.s2 }}{{ t_data.time_b }}到</q-item>
+                <q-item class="q-pa-md">{{ Math.floor(t_data.time / 60) }}小时{{ t_data.time % 60 }}分钟</q-item>
+                <q-item class="q-pa-md">商务：候补</q-item>
+                <q-item class="q-pa-md">一等：候补</q-item>
+                <q-item class="q-pa-md">二等：{{ t_data.ticket }} 张</q-item>
                 <q-space></q-space>
                 <q-btn flat dense icon="add_shopping_cart" label="购买车票" class="q-my-auto q-mr-md"
                        @click="index = data.indexOf(t_data);show_dialog=true;onResetSe();"/>
@@ -214,7 +214,7 @@
               </template>
             </q-select>
 
-            <q-btn color="primary" type="submit" class="full-width" :label="'支付137.43元'" size="lg"/>
+            <q-btn color="primary" type="submit" class="full-width" :label="'支付' + Math.floor((index < 0 ? 0 : data[index].price) * (ticket === null ? 0 : ticket_price[ticket_opts.indexOf(ticket)])) + '元'" size="lg"/>
 
           </q-form>
         </q-card-section>
@@ -275,7 +275,8 @@ export default {
         {label: 'D', value: 'D'},
         {label: 'E', value: 'E'},
       ],
-      ticket_opts: ['成人票', '儿童票', '学生票']
+      ticket_opts: ['成人票', '儿童票', '学生票'],
+      ticket_price: [0.1, 0.05, 0.08]
     }
   },
   mounted() {
@@ -353,6 +354,7 @@ export default {
         console.log(res)
         switch (res.status){
           case 200:
+            this.index = -1;
             this.data = res.data;
             this.first = false;
             break;
@@ -406,8 +408,23 @@ export default {
         console.log(res)
         switch (res.status){
           case 200:
-            this.data = res.data;
-            this.first = false;
+            this.$q.notify({
+              color : 'white',
+              textColor : 'black',
+              message : '购买成功！',
+              icon: 'add_shopping_cart',
+              position : 'top'
+            });
+            this.show_dialog = false;
+            break;
+          case 501:
+            this.$q.notify({
+              color : 'white',
+              textColor : 'red-5',
+              message : '您选择的席别已售空。',
+              icon: 'warning',
+              position : 'top'
+            });
             break;
           default:
             this.$q.notify({

@@ -70,7 +70,7 @@
               </div>
             </q-btn>
 
-            <q-card flat bordered class="passenger-card q-my-sm" v-for="p_data in data" :key="p_data">
+            <q-card flat bordered class="passenger-card q-my-sm" v-for="p_data in data" :key="p_data.pid">
               <div class="row q-pa-none">
                 <q-item class="q-pa-md">{{ p_data.name }}</q-item>
                 <q-item class="q-pa-md">{{ sex_opts[p_data.sex] }}</q-item>
@@ -211,6 +211,7 @@ export default {
         switch (res.status){
           case 200:
             this.data = res.data;
+            this.index = -1;
             this.show_dialog = false;
             break;
           case 500:

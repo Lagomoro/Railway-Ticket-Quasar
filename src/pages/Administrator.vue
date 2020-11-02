@@ -77,20 +77,10 @@ export default {
             this.$q.notify({
               color : 'white',
               textColor : 'black',
-              message : this.pid > 0 ? '修改成功！': '添加成功！',
-              icon: this.pid > 0 ? 'build' : 'add',
+              message : ['添加成功！', '删除成功！'][this.method],
+              icon: ['add', 'delete'][this.method],
               position : 'top'
             });
-            break;
-          case 500:
-            this.$q.notify({
-              color : 'white',
-              textColor : 'red-5',
-              message : '登录失效，请先登录。',
-              icon: 'warning',
-              position : 'top'
-            });
-            this.$router.push('/login')
             break;
           default:
             this.$q.notify({

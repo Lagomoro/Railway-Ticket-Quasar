@@ -42,6 +42,13 @@ const routes = [
     ]
   },
   {
+    path: '/order',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Order.vue') }
+    ]
+  },
+  {
     path: '/login',
     component: () => import('layouts/MainLayout.vue'),
     children: [
