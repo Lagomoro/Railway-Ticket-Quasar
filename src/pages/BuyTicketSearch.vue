@@ -125,7 +125,7 @@
         <q-page-container>
           <q-page class="q-pa-none q-py-sm flex flex-center">
 
-            <q-card flat bordered class="train-card q-my-sm" v-for="t_data in data" :key="t_data">
+            <q-card flat bordered class="train-card q-my-sm" v-for="t_data in data" :key="t_data.tid">
               <div class="row q-pa-none">
                 <q-item class="q-pa-md">{{ t_data.tid }}</q-item>
                 <q-item class="q-pa-md">{{ t_data.start }} - {{ t_data.end }}</q-item>
@@ -136,7 +136,8 @@
                 <q-item class="q-pa-md">一等座：15张</q-item>
                 <q-item class="q-pa-md">二等座：候补</q-item>
                 <q-space></q-space>
-                <q-btn flat dense icon="add_shopping_cart" label="购买车票" class="q-my-auto q-mr-md" @click=""/>
+                <q-btn flat dense icon="add_shopping_cart" label="购买车票" class="q-my-auto q-mr-md"
+                       @click="index = data.indexOf(t_data);show_dialog=true;onResetSe();"/>
               </div>
               <q-separator />
               <q-expansion-item icon="alarm" label="点击展开时刻表">
@@ -162,6 +163,64 @@
 
       </q-layout>
     </q-card>
+
+    <q-dialog v-model="show_dialog">
+      <q-card class="my-card">
+        <q-card-section>
+          <q-form @submit="onTicketSubmit" @reset="onResetSe">
+
+            <q-select filled v-model="passenger" label="选择乘客" :options="passenger_opts"
+                      :rules="[ val => val !== null && val.length > 0 || '请选择乘客']" type="text"
+                       @filter="filterSe" @filter-abort="abortFilterFn">
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <q-select filled v-model="seat" label="座位类型" :options="seat_opts"
+                      :rules="[ val => val !== null && val.length > 0 || '请选择座位类型']" type="text"
+                      @filter="filterSe" @filter-abort="abortFilterFn">
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <div class="row">
+              <q-item>选座服务：</q-item>
+              <q-option-group v-model="place" :options="place_opts" color="primary" inline class="q-mb-md"/>
+              <q-space/>
+              <div>
+                <q-btn flat round dense icon="clear" @click="place='N'" class="q-my-auto q-mr-md"/>
+              </div>
+            </div>
+
+            <q-select filled v-model="ticket" label="车票类型" :options="ticket_opts"
+                      :rules="[ val => val !== null && val.length > 0 || '请选择乘客类型']" type="text"
+                      @filter="filterSe" @filter-abort="abortFilterFn">
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <q-btn color="primary" type="submit" class="full-width" :label="'支付137.43元'" size="lg"/>
+
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -196,8 +255,80 @@ export default {
         { name: 'time_a', label: '到时', field: 'time_a', align: "center"},
         { name: 'time', label: '历时', field: 'time', align: "center"},
       ],
-      data: []
+      data: [],
+
+      show_dialog: false,
+
+      index: -1,
+      passenger: null,
+      seat: null,
+      place: 'N',
+      ticket: null,
+
+      passenger_data: null,
+      passenger_opts: null,
+      seat_opts: ['商务座', '一等座', '二等座'],
+      place_opts: [
+        {label: 'A', value: 'A'},
+        {label: 'B', value: 'B'},
+        {label: 'C', value: 'C'},
+        {label: 'D', value: 'D'},
+        {label: 'E', value: 'E'},
+      ],
+      ticket_opts: ['成人票', '儿童票', '学生票']
     }
+  },
+  mounted() {
+    axios({
+      // 默认请求方式为get
+      method: 'get',
+      url: '/login/token',
+      // 传递参数
+      params: {},
+      // 设置请求头信息
+      headers: {
+        'content-type': "application/json"
+      },
+      responseType: 'json'
+    }).then(response => {
+      // 请求成功
+      let res = response.data;
+      console.log(res)
+      switch (res.status){
+        case 200:
+          break;
+        case 500:
+          this.$q.notify({
+            color : 'white',
+            textColor : 'red-5',
+            message : '登录失效，请先登录。',
+            icon: 'warning',
+            position : 'top'
+          });
+          this.$router.push('/login')
+          break;
+        default:
+          this.$q.notify({
+            color : 'white',
+            textColor : 'red-5',
+            message : '系统错误，请稍后尝试。',
+            icon: 'warning',
+            position : 'top'
+          });
+          this.$router.go(-1)
+      }
+    }).catch(error => {
+      // 请求失败，
+      console.log(error);
+      this.$q.notify({
+        color : 'white',
+        textColor : 'red-5',
+        message : '系统错误，请稍后尝试。',
+        icon: 'warning',
+        position : 'top'
+      });
+      this.$router.go(-1)
+    });
   },
   methods: {
     onSubmit () {
@@ -208,8 +339,62 @@ export default {
         // 传递参数
         params: {
           station1: this.station_start,
-          station2: this.station_end
+          station2: this.station_end,
+          date: this.date
         },
+        // 设置请求头信息
+        headers: {
+          'content-type': "application/json"
+        },
+        responseType: 'json'
+      }).then(response => {
+        // 请求成功
+        let res = response.data;
+        console.log(res)
+        switch (res.status){
+          case 200:
+            this.data = res.data;
+            this.first = false;
+            break;
+          default:
+            this.$q.notify({
+              color : 'white',
+              textColor : 'red-5',
+              message : '系统错误，请稍后尝试。',
+              icon: 'warning',
+              position : 'top'
+            });
+        }
+      }).catch(error => {
+        // 请求失败，
+        console.log(error);
+        this.$q.notify({
+          color : 'white',
+          textColor : 'red-5',
+          message : '系统错误，请稍后尝试。',
+          icon: 'warning',
+          position : 'top'
+        });
+      });
+    },
+    onTicketSubmit () {
+      let params = {
+        tid: this.data[this.index].tid,
+        date: this.data[this.index].date,
+        pid: parseInt(this.passenger.substring(this.passenger.indexOf("#") + 1, this.passenger.length)),
+        seat_type: this.seat_opts.indexOf(this.seat),
+        seat_select: ['N','A','B','C','D','E'].indexOf(this.place),
+        type: this.ticket_opts.indexOf(this.ticket),
+        sid1: this.data[this.index].sid1,
+        sid2: this.data[this.index].sid2
+      }
+      console.log(params);
+      axios({
+        // 默认请求方式为get
+        method: 'get',
+        url: '/ticket/buy',
+        // 传递参数
+        params: params,
         // 设置请求头信息
         headers: {
           'content-type': "application/json"
@@ -252,6 +437,12 @@ export default {
       this.onlyHighSpeed = false;
       this.onlyStudent = false;
     },
+    onResetSe () {
+      this.passenger = null;
+      this.seat = null;
+      this.place = 'N';
+      this.ticket = null;
+    },
     onExchange(){
       let temp = this.station_start;
       this.station_start = this.station_end;
@@ -291,6 +482,61 @@ export default {
               this.station_opts_tmp = res.data;
               const needle = val.toLowerCase();
               this.station_opts = this.station_opts_tmp.filter(v => v.toLowerCase().indexOf(needle) > -1);
+            });
+            break;
+          default:
+            abort();
+            this.$q.notify({
+              color : 'white',
+              textColor : 'red-5',
+              message : '系统错误，请稍后尝试。',
+              icon: 'warning',
+              position : 'top'
+            });
+            break;
+        }
+      }).catch(error => {
+        // 请求失败，
+        abort();
+        console.log(error);
+      });
+    },
+    filterSe (val, update, abort) {
+      if (this.passenger_opts !== null) {
+        update(() => {
+
+        }, ref => {
+          if (val !== '' && ref.options.length > 0 && ref.optionIndex === -1) {
+            ref.moveOptionSelection(1, true) // focus the first selectable option and do not update the input-value
+            ref.toggleOption(ref.options[ref.optionIndex], true) // toggle the focused option
+          }
+        });
+        return;
+      }
+      axios({
+        // 默认请求方式为get
+        method: 'get',
+        url: 'passenger/get',
+        // 传递参数
+        params: {},
+        // 设置请求头信息
+        headers: {
+          'content-type': "application/json"
+        },
+        responseType: 'json'
+      }).then(response => {
+        // 请求成功
+        let res = response.data;
+        console.log(res)
+        switch (res.status){
+          case 200:
+            update(() => {
+              this.passenger_data = res.data;
+              let temp = [];
+              for(let passenger in res.data){
+                temp.push(res.data[passenger].name + " #" + res.data[passenger].pid)
+              }
+              this.passenger_opts = temp;
             });
             break;
           default:

@@ -14,15 +14,7 @@
         <q-tab-panel name="train">
           <q-form @submit="onSubmit" @reset="onReset">
             <q-input filled v-model="train" clearable fill-input label="车次" type="text"
-                      :rules="[ val => val !== null && val.length > 0 || '请输入车次']">
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-input>
+                      :rules="[ val => val !== null && val.length > 0 || '请输入车次']"/>
 
             <q-input filled v-model="date" fill-input label="出发日期" class="q-mr-auto"
                      :rules="[ val => /^(0[1-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/g.test(val) || '请输入正确的日期，例如：10月01日']">
@@ -160,15 +152,7 @@
                     <div class="row full-width flex flex-center q-pb-xs">
                       <div class="row q-mb-auto q-mt-md" style="padding: 0px">
                         <q-input filled v-model="train" clearable fill-input label="车次" type="text" class="q-mx-sm"
-                                 :rules="[ val => val !== null && val.length > 0 || '请输入车次']" style="width:450px">
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-input>
+                                 :rules="[ val => val !== null && val.length > 0 || '请输入车次']" style="width:450px"/>
                       </div>
 
                       <q-input filled v-model="date" fill-input label="出发日期" class="q-mt-md q-mx-sm" style="width: 370px"
@@ -297,7 +281,7 @@
         <q-page-container>
           <q-page class="q-pa-none q-py-sm flex flex-center">
 
-            <q-card flat bordered class="train-card q-my-sm" v-for="t_data in data" :key="t_data">
+            <q-card flat bordered class="train-card q-my-sm" v-for="t_data in data" :key="t_data.tid">
               <div class="row q-pa-none">
                 <q-item class="q-pa-md">{{ t_data.tid }}</q-item>
                 <q-item class="q-pa-md">{{ t_data.start }} - {{ t_data.end }}</q-item>

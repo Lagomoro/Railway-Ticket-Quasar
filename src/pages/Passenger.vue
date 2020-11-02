@@ -7,30 +7,14 @@
           <q-form @submit="onSubmit" @reset="onReset">
 
             <q-input filled v-model="name" clearable fill-input label="乘客姓名" type="text"
-                     :rules="[ val => val !== null && val.length > 0 || '请输入乘客姓名']">
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-input>
+                     :rules="[ val => val !== null && val.length > 0 || '请输入乘客姓名']"/>
 
             <q-input filled v-model="identity" clearable fill-input label="乘客身份证号" type="text"
-                     :rules="[ val => val !== null && val.length > 0 || '请输入乘客身份证号']">
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-input>
+                     :rules="[ val => val !== null && val.length > 0 || '请输入乘客身份证号']"/>
 
-            <q-select filled v-model="sex" clearable use-input hide-selected fill-input input-debounce="0"
+            <q-select filled v-model="sex" label="乘客性别" :options="sex_opts"
                       :rules="[ val => val !== null && val.length > 0 || '请选择乘客性别']" type="text"
-                      label="乘客性别" :options="sex_opts" @filter="filterFn" @filter-abort="abortFilterFn">
+                      @filter="filterFn" @filter-abort="abortFilterFn">
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -40,9 +24,9 @@
               </template>
             </q-select>
 
-            <q-select filled v-model="type" clearable use-input hide-selected fill-input input-debounce="0"
+            <q-select filled v-model="type" label="乘客类型" :options="type_opts"
                       :rules="[ val => val !== null && val.length > 0 || '请选择乘客类型']" type="text"
-                      label="乘客类型" :options="type_opts" @filter="filterFn" @filter-abort="abortFilterFn">
+                      @filter="filterFn" @filter-abort="abortFilterFn">
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -185,6 +169,7 @@ export default {
               icon: 'warning',
               position : 'top'
             });
+            this.$router.push('/login')
             break;
           default:
             this.$q.notify({
@@ -236,6 +221,7 @@ export default {
               icon: 'warning',
               position : 'top'
             });
+            this.$router.push('/login')
             break;
           default:
             this.$q.notify({
@@ -295,6 +281,7 @@ export default {
               icon: 'warning',
               position : 'top'
             });
+            this.$router.push('/login')
             break;
           case 501:
             this.$q.notify({

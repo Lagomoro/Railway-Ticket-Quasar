@@ -11,12 +11,13 @@
         </q-toolbar-title>
 
         <q-tabs v-model="tab" inline-label shrink class="bg-transparent">
-          <q-route-tab name="home" icon="home" label="首页" to="/login" exact/>
+          <q-route-tab name="home" icon="home" label="首页" to="/index" exact/>
           <q-route-tab name="mails" icon="credit_card" label="购票" to="/buy-ticket-search" exact/>
-          <q-route-tab name="alarms" icon="alarm" label="时刻表" to="/schedule-search"/>
+          <q-route-tab name="alarms" icon="alarm" label="时刻表" to="/schedule-search" exact/>
           <q-route-tab hidden name="passenger" to="/passenger"/>
-          <q-route-tab name="admin" icon="admin_panel_settings" label="管理员工具" to="/passenger"/>
-          <q-route-tab name="develop" icon="code" label="开发者工具" to="/schedule"/>
+          <q-route-tab hidden name="login" to="/login"/>
+          <q-route-tab name="admin" icon="admin_panel_settings" label="管理员工具" to="/administrator" exact/>
+          <q-route-tab name="develop" icon="code" label="开发者工具" to="/schedule" exact/>
         </q-tabs>
 
         <q-separator vertical inset/>
@@ -111,15 +112,15 @@ const linksData = [
 
 const userLinksData = [
   {
+    title: '登录',
+    caption: 'Login',
+    icon: 'login',
+    tab: 'login'
+  },
+  {
     title: '修改密码',
     caption: 'Change Password',
     icon: 'school',
-    tab: 'passenger'
-  },
-  {
-    title: '个人信息',
-    caption: 'Personal Information',
-    icon: 'code',
     tab: 'passenger'
   },
   {

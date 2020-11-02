@@ -70,10 +70,11 @@ export default {
         }
         switch (res.status){
           case 200:
-            opts.message = '登录成功！';
+            opts.message = '登录成功，正在跳转！';
             opts.icon = 'cloud_done';
             opts.textColor = 'green-4';
             Cookie.set('token', res.token, { expires: 7 })
+            this.$router.go(-1)
             break;
           case 500: opts.message = '登陆失败，用户名不存在。'; break;
           case 501: opts.message = '登陆失败，用户名或密码错误。'; break;
