@@ -34,11 +34,17 @@
                 <q-item class="q-pa-md">车票#{{ o_data.ticket_id }}</q-item>
                 <q-item class="q-pa-md">{{ o_data.journey }}</q-item>
                 <q-item class="q-pa-md">车次：{{ o_data.tid }}</q-item>
-                <q-item class="q-pa-md">座位：{{ o_data.seat_number }}</q-item>
-                <q-item class="q-pa-md">乘客姓名：{{ o_data.passenger }}</q-item>
-                <q-item class="q-pa-md">身份证号：{{ o_data.identity }}</q-item>
+                <q-item class="q-pa-md">{{ o_data.seat_type }}</q-item>
+                <q-item class="q-pa-md">{{ o_data.seat_number }}</q-item>
                 <q-space></q-space>
                 <q-btn flat dense icon="build" label="改签" class="q-my-auto q-mr-md"/>
+              </div>
+              <div class="row q-pa-none">
+                <q-item class="q-pa-md">出发日期：{{ o_data.date }}</q-item>
+                <q-item class="q-pa-md">{{ o_data.schedule[0] }}开</q-item>
+                <q-item class="q-pa-md">{{ o_data.schedule[1] }}到</q-item>
+                <q-item class="q-pa-md">乘客姓名：{{ o_data.passenger }}</q-item>
+                <q-item class="q-pa-md">身份证号：{{ o_data.identity }}</q-item>
               </div>
             </q-card>
 

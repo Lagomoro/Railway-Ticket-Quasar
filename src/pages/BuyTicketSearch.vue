@@ -132,9 +132,9 @@
                 <q-item class="q-pa-md">{{ t_data.s1 }}{{ t_data.time_a }}开</q-item>
                 <q-item class="q-pa-md">{{ t_data.s2 }}{{ t_data.time_b }}到</q-item>
                 <q-item class="q-pa-md">{{ Math.floor(t_data.time / 60) }}小时{{ t_data.time % 60 }}分钟</q-item>
-                <q-item class="q-pa-md">商务：候补</q-item>
-                <q-item class="q-pa-md">一等：候补</q-item>
-                <q-item class="q-pa-md">二等：{{ t_data.ticket }} 张</q-item>
+                <q-item class="q-pa-md">商务：{{ t_data.ticket[0] }} 张</q-item>
+                <q-item class="q-pa-md">一等：{{ t_data.ticket[1] }} 张</q-item>
+                <q-item class="q-pa-md">二等：{{ t_data.ticket[2] }} 张</q-item>
                 <q-space></q-space>
                 <q-btn flat dense icon="add_shopping_cart" label="购买车票" class="q-my-auto q-mr-md"
                        @click="index = data.indexOf(t_data);show_dialog=true;onResetSe();"/>
@@ -183,7 +183,7 @@
 
             <q-select filled v-model="seat" label="座位类型" :options="seat_opts"
                       :rules="[ val => val !== null && val.length > 0 || '请选择座位类型']" type="text"
-                      @filter="filterSe" @filter-abort="abortFilterFn">
+                      @filter="filterNv" @filter-abort="abortFilterFn">
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -193,9 +193,9 @@
               </template>
             </q-select>
 
-            <div class="row">
+            <div class="row" v-if="seat">
               <q-item>选座服务：</q-item>
-              <q-option-group v-model="place" :options="place_opts" color="primary" inline class="q-mb-md"/>
+              <q-option-group v-model="place" :options="place_opts[seat == null ? -1 : seat_opts.indexOf(seat)]" color="primary" inline class="q-mb-md"/>
               <q-space/>
               <div>
                 <q-btn flat round dense icon="clear" @click="place='N'" class="q-my-auto q-mr-md"/>
@@ -214,7 +214,7 @@
               </template>
             </q-select>
 
-            <q-btn color="primary" type="submit" class="full-width" :label="'支付' + Math.floor((index < 0 ? 0 : data[index].price) * (ticket === null ? 0 : ticket_price[ticket_opts.indexOf(ticket)])) + '元'" size="lg"/>
+            <q-btn color="primary" type="submit" class="full-width" :label="'支付' + Math.floor((index < 0 ? 0 : data[index].price) * (ticket === null ? 0 : ticket_price[ticket_opts.indexOf(ticket)]) * (seat === null ? 0 : seat_price[seat_opts.indexOf(seat)])) + '元'" size="lg"/>
 
           </q-form>
         </q-card-section>
@@ -269,14 +269,26 @@ export default {
       passenger_opts: null,
       seat_opts: ['商务座', '一等座', '二等座'],
       place_opts: [
-        {label: 'A', value: 'A'},
-        {label: 'B', value: 'B'},
-        {label: 'C', value: 'C'},
-        {label: 'D', value: 'D'},
-        {label: 'E', value: 'E'},
+        [
+          {label: 'A', value: 'A'},
+          {label: 'C', value: 'C'},
+          {label: 'F', value: 'F'},
+        ],[
+          {label: 'A', value: 'A'},
+          {label: 'C', value: 'C'},
+          {label: 'D', value: 'D'},
+          {label: 'F', value: 'F'},
+        ],[
+          {label: 'A', value: 'A'},
+          {label: 'B', value: 'B'},
+          {label: 'C', value: 'C'},
+          {label: 'D', value: 'D'},
+          {label: 'F', value: 'F'},
+        ]
       ],
       ticket_opts: ['成人票', '儿童票', '学生票'],
-      ticket_price: [0.1, 0.05, 0.08]
+      ticket_price: [0.5, 0.25, 0.4],
+      seat_price:[0.91, 0.49, 0.31],
     }
   },
   mounted() {
@@ -380,12 +392,13 @@ export default {
       });
     },
     onTicketSubmit () {
+      let seat_type = this.seat_opts.indexOf(this.seat);
       let params = {
         tid: this.data[this.index].tid,
         date: this.data[this.index].date,
         pid: parseInt(this.passenger.substring(this.passenger.indexOf("#") + 1, this.passenger.length)),
-        seat_type: this.seat_opts.indexOf(this.seat),
-        seat_select: ['N','A','B','C','D','E'].indexOf(this.place),
+        seat_type: seat_type,
+        seat_select: [['N','A','C','F'],['N','A','C','D','F'],['N','A','B','C','D','F']][seat_type].indexOf(this.place),
         type: this.ticket_opts.indexOf(this.ticket),
         sid1: this.data[this.index].sid1,
         sid2: this.data[this.index].sid2
@@ -572,6 +585,18 @@ export default {
         abort();
         console.log(error);
       });
+    },
+    filterNv (val, update, abort) {
+      this.place = 'N';
+      update(() => {
+
+      }, ref => {
+        if (val !== '' && ref.options.length > 0 && ref.optionIndex === -1) {
+          ref.moveOptionSelection(1, true) // focus the first selectable option and do not update the input-value
+          ref.toggleOption(ref.options[ref.optionIndex], true) // toggle the focused option
+        }
+      });
+      return;
     },
     abortFilterFn () {
       // console.log('delayed filter aborted')

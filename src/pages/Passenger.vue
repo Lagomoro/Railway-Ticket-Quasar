@@ -10,7 +10,7 @@
                      :rules="[ val => val !== null && val.length > 0 || '请输入乘客姓名']"/>
 
             <q-input filled v-model="identity" clearable fill-input label="乘客身份证号" type="text"
-                     :rules="[ val => val !== null && val.length > 0 || '请输入乘客身份证号']"/>
+                     :rules="[ val => /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/g.test(val) || '请输入正确的身份证号']"/>
 
             <q-select filled v-model="sex" label="乘客性别" :options="sex_opts"
                       :rules="[ val => val !== null && val.length > 0 || '请选择乘客性别']" type="text"

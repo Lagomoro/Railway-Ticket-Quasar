@@ -18,7 +18,7 @@
           <q-route-tab hidden name="order" to="/order"/>
           <q-route-tab hidden name="login" to="/login"/>
           <q-route-tab name="admin" icon="admin_panel_settings" label="管理员工具" to="/administrator" exact/>
-          <q-route-tab name="develop" icon="code" label="开发者工具" to="/schedule" exact/>
+          <!--<q-route-tab name="develop" icon="code" label="开发者工具" to="/schedule" exact/>-->
         </q-tabs>
 
         <q-separator vertical inset/>
@@ -117,12 +117,6 @@ const userLinksData = [
     caption: 'Login',
     icon: 'login',
     tab: 'login'
-  },
-  {
-    title: '修改密码',
-    caption: 'Change Password',
-    icon: 'school',
-    tab: 'passenger'
   },
   {
     title: '乘客管理',
