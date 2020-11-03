@@ -214,7 +214,7 @@
               </template>
             </q-select>
 
-            <q-btn color="primary" type="submit" class="full-width" :label="'支付' + Math.floor((index < 0 ? 0 : data[index].price) * (ticket === null ? 0 : ticket_price[ticket_opts.indexOf(ticket)]) * (seat === null ? 0 : seat_price[seat_opts.indexOf(seat)])) + '元'" size="lg"/>
+            <q-btn color="primary" type="submit" class="full-width" :label="GetPrice()" size="lg"/>
 
           </q-form>
         </q-card-section>
@@ -286,9 +286,7 @@ export default {
           {label: 'F', value: 'F'},
         ]
       ],
-      ticket_opts: ['成人票', '儿童票', '学生票'],
-      ticket_price: [0.5, 0.25, 0.4],
-      seat_price:[0.91, 0.49, 0.31],
+      ticket_opts: ['成人票', '儿童票', '学生票']
     }
   },
   mounted() {
@@ -344,6 +342,17 @@ export default {
     });
   },
   methods: {
+    GetPrice(){
+      if(this.seat === null || this.ticket === null)
+        return '请输入车票信息';
+      let ticket_price= [0.5, 0.25, 0.4];
+      let student_price = [0.5, 0.5, 0.4];
+      let seat_price =[0.91, 0.49, 0.31];
+      let seat_type = this.seat_opts.indexOf(this.seat);
+      let type = this.ticket_opts.indexOf(this.ticket);
+      let percent = seat_price[seat_type] * (type == 2 ? student_price[seat_type] : ticket_price[type]);
+      return '支付' + Math.floor((this.index < 0 ? 0 : this.data[this.index].price) * percent) + '元'
+    },
     onSubmit () {
       axios({
         // 默认请求方式为get
